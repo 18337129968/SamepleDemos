@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion project.COMPILE_SDK_VERSION as int
+    defaultConfig {
+        applicationId "com.example.administrator.samepledemos"
+        minSdkVersion project.MIN_SDK_VERSION as int
+        targetSdkVersion project.TARGET_SDK_VERSION as int
+        versionCode project.VERSION_CODE as int
+        versionName project.VERSION_NAME
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+//        jackOptions {
+//            enabled true
+//        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleDependency
+    implementation "com.android.support:appcompat-v7:${SUPPORT_LIBRARY}"
+    implementation "com.android.support.constraint:constraint-layout:${CONSTRAINT_LAYOUT}"
+    testImplementation "junit:junit:${JUNIT}"
+    androidTestImplementation "com.android.support.test:runner:${RUNNER}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${ESPRESSO_CORE}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${BUTTERKNIFE}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${DAGGER}"
+    compile project(':hflib')
+    compile 'com.lufficc:stateLayout:0.1.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+}

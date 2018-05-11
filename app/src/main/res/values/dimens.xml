@@ -1,0 +1,41 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!--基类的-->
+    <dimen name="title_bar_dimmens">0px</dimen>
+    <dimen name="titlte_height">88px</dimen>
+    <dimen name="left_img_height">60px</dimen>
+    <dimen name="title_img_size">46px</dimen>
+    <dimen name="right_img_width">35px</dimen>
+    <dimen name="right_img_height">21px</dimen>
+    <dimen name="margin_20px">20px</dimen>
+    <dimen name="margin_30px">30px</dimen>
+    <dimen name="right_img2_width">60px</dimen>
+    <dimen name="right_img2_height">46px</dimen>
+    <dimen name="left_title_size">17sp</dimen>
+    <dimen name="right_title_size">17sp</dimen>
+    <dimen name="title_text_size">17sp</dimen>
+    <!--app-->
+    <dimen name="textsize_60px">30sp</dimen>
+    <dimen name="textsize_36px">18sp</dimen>
+    <dimen name="textsize_34px">17sp</dimen>
+    <dimen name="textsize_32px">16sp</dimen>
+    <dimen name="textsize_30px">15sp</dimen>
+    <dimen name="textsize_28px">14sp</dimen>
+    <dimen name="textsize_26px">13sp</dimen>
+    <dimen name="textsize_20px">10sp</dimen>
+    <dimen name="textsize_24px">12sp</dimen>
+    <dimen name="textsize_22px">11sp</dimen>
+    <dimen name="textsize_18px">9sp</dimen>
+    <dimen name="action_button_margin">0px</dimen>
+    <dimen name="img_70px">60px</dimen>
+    <dimen name="table_width_170">95dp</dimen>
+    <dimen name="table_width_150">80dp</dimen>
+    <dimen name="table_width_130">70dp</dimen>
+    <dimen name="table_height_90">45dp</dimen>
+    <dimen name="table_height_80">45dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="height_60">30dp</dimen>
+    <dimen name="with_210">100dp</dimen>
+</resources>

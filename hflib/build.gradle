@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.jakewharton:butterknife-gradle-plugin:${BUTTERKNIFE}"
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.jakewharton.butterknife'
+
+android {
+    compileSdkVersion project.COMPILE_SDK_VERSION as int
+    buildToolsVersion project.BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion project.MIN_SDK_VERSION as int
+        targetSdkVersion project.TARGET_SDK_VERSION as int
+        versionCode project.VERSION_CODE as int
+        versionName project.VERSION_NAME
+
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+    }
+
+    //recommend
+    dexOptions {
+        jumboMode = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //noinspection GradleDependency,GradleCompatible
+    compile "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY}"
+    compile "com.android.support:multidex:${MULTIDEX}"
+    //noinspection GradleDependency
+    compile "com.jakewharton:butterknife:${BUTTERKNIFE}"
+    compile "com.jakewharton.rxbinding:rxbinding:${RXBINDING}"
+    compile "com.zhy:autolayout:${AUTOLAYOUT}"
+    compile "com.squareup:otto:${OTTO}"
+    compile "com.squareup.retrofit2:retrofit:${RETROFIT}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${RETROFIT}"
+    compile "com.squareup.okhttp3:okhttp:${OKHTTP}"
+    compile "com.squareup.okhttp3:logging-interceptor:${OKHTTP}"
+    //当stetho时调试使用
+    //    compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
+    compile "com.facebook.fresco:fresco:${FRESCO}"
+    compile "com.facebook.fresco:animated-gif:${FRESCO}"
+    compile "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO}"
+    compile "com.alibaba:fastjson:${FASTJSON}"
+    compile "io.reactivex:rxandroid:${RXANDROID}"
+    compile "io.reactivex:rxjava:${RXJAVA}"
+    //noinspection GradleDependency
+    compile "com.orhanobut:logger:${LOGGERS}"
+    compile "com.readystatesoftware.systembartint:systembartint:${SYSTEMBARTINT}"
+    provided "org.glassfish:javax.annotation:${ANNOTATION}"
+    compile "com.google.dagger:dagger:${DAGGER}"
+}
+
