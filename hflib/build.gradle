@@ -37,6 +37,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildTypes{
+
+        debug {
+            def catchEx = false as String
+            buildConfigField("boolean", "CATCH_EX", catchEx)
+        }
+        release {
+            def catchEx = true as String
+            buildConfigField("boolean", "CATCH_EX", catchEx)
+        }
+    }
 }
 
 dependencies {

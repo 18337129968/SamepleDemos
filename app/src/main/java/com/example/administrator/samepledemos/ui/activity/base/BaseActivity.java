@@ -25,7 +25,6 @@ import rx.Subscription;
  * @auther xie
  */
 public abstract class BaseActivity extends LibBaseActivity {
-
     private FrameLayout content;
     private SystemBarTintManager tintManager;
     private ViewStub stub;
@@ -37,6 +36,8 @@ public abstract class BaseActivity extends LibBaseActivity {
     protected StateLayout stateLayout;
 
     protected abstract int getContentResource();
+
+
 
     @Override
     protected void beforWork() {
@@ -351,7 +352,8 @@ public abstract class BaseActivity extends LibBaseActivity {
      * @return void
      * @see: htttpRequest
      * @Description: (可设置dialog开关网络请求)
-     * @params [showDialog 是否显示dialog, subscription 网络请求接口]
+     * @param showDialog 是否显示dialog
+     * @param subscription 网络请求接口
      * @since 2.0
      */
     public void htttpRequest(boolean showDialog, Subscription subscription) {

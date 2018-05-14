@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.WindowManager;
 
+import com.hfxief.BuildConfig;
 import com.hfxief.R;
 import com.hfxief.app.BaseManagers;
 import com.hfxief.app.RequestManager;
@@ -21,11 +22,14 @@ import java.util.List;
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 
-public abstract class LibBaseActivity extends MPermissionActivity implements RequestManager.OnRequestListener {
-    protected CompositeSubscription subscriptions = new CompositeSubscription();
-    protected FragmentManager fragmentManager;
+public abstract class LibBaseActivity extends MPermissionActivity implements RequestManager.OnRequestListener, Thread.UncaughtExceptionHandler {
     private ProgressDialog progressDialog;
+
     public Toastor toastor;
+
+    protected FragmentManager fragmentManager;
+    protected Thread.UncaughtExceptionHandler mDefaultHandler;
+    protected CompositeSubscription subscriptions = new CompositeSubscription();
 
     protected abstract int getContentView();
 
@@ -38,11 +42,18 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
     protected abstract void beforWork();
 
     @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        if (BuildConfig.CATCH_EX) mDefaultHandler.uncaughtException(t, e);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         beforWork();
         fragmentManager = getSupportFragmentManager();
         BaseManagers.getActivitiesManager().addActivity(this);
         super.onCreate(savedInstanceState);
+        mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
         setContentView(getContentView());
         setContentResource();
         ButterKnife.bind(this);
