@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--自定义GridView布局-->
+    <declare-styleable name="GridViewLayout">
+        <attr name="column" format="integer"/>
+    </declare-styleable>
+</resources>

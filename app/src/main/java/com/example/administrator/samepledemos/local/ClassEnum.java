@@ -15,12 +15,19 @@ import java.util.List;
 
 public class ClassEnum {
     private static List<Class> classes = new ArrayList<>();
+    private static List<String> names = new ArrayList<>();
+
     public static Class<?> valueOf(int value) {
         Class c = classes.get(value);
         return c;
     }
 
-    public static void addClass(Class clas){
+    public static void addClass(Class clas) {
         classes.add(clas);
+        names.add(clas.getSimpleName());
+    }
+
+    public static List<String> getNames() {
+        return names;
     }
 }

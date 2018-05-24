@@ -9,12 +9,11 @@ import com.example.administrator.samepledemos.R;
 import com.example.administrator.samepledemos.local.ClassEnum;
 import com.example.administrator.samepledemos.ui.activity.base.BaseActivity;
 import com.example.administrator.samepledemos.ui.activity.camera.CameraActivity;
+import com.example.administrator.samepledemos.ui.activity.gridview.GridViewActivity;
 import com.hfxief.adapter.listview.base.CommonAdapter;
 import com.hfxief.adapter.listview.base.baseItem.ViewHolder;
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -27,8 +26,6 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.listView)
     ListView listView;
 
-    private List<String> names = new ArrayList<>();
-
     @Override
     protected void startWork(Bundle savedInstanceState) {
         setTittleText("首页");
@@ -36,14 +33,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initClass() {
-        names.add(CameraActivity.class.getSimpleName());
         ClassEnum.addClass(CameraActivity.class);
+        ClassEnum.addClass(GridViewActivity.class);
+
     }
 
     private void initData() {
         initClass();
         listView.setAdapter(new CommonAdapter<String>(this,
-                android.R.layout.simple_expandable_list_item_1, names) {
+                android.R.layout.simple_expandable_list_item_1, ClassEnum.getNames()) {
             @Override
             protected void convert(ViewHolder holder, String item, int position) {
                 holder.setText(android.R.id.text1, item);
