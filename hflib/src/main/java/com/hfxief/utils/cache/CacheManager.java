@@ -29,6 +29,7 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -228,10 +229,14 @@ public class CacheManager {
         put(key, json);
     }
 
-    public Object getObject(String key, Class<?> cls) {
+    public <T> T getObject(String key, Class<T> cls) {
         String json = getAsString(key);
-        Object o = JSON.parseObject(json, cls);
-        return o;
+        return JSON.parseObject(json, cls);
+    }
+
+    public <T> List<T> getArray(String key, Class<T> clazz) {
+        String json = getAsString(key);
+        return JSON.parseArray(json,clazz);
     }
 
     /**
