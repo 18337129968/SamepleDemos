@@ -8,27 +8,65 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
+import android.util.Pair;
+import android.widget.ImageView;
 
+import com.hfxief.utils.ConstUtils;
 import com.hfxief.utils.file.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
 
-/** 
-*@Title: ImageUtil
-*@date 2016/7/19 17:37
-*@auther xie
-*@Description:  描述
-*/
+/**
+ * @Title: ImageUtil
+ * @date 2016/7/19 17:37
+ * @auther xie
+ * @Description: 描述
+ */
 public class ImageUtil {
+    private static ArrayMap<String, Pair<Integer, Integer>> imageSizeMap = new ArrayMap<>();
 
     private ImageUtil() {
 
     }
 
-    static Bitmap getScaledBitmap(Context context, Uri imageUri, float maxWidth, float maxHeight) {
+    private static String generateFilePath(Context context, String parentPath, Uri uri, String extension) {
+        File file = new File(parentPath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return file.getAbsolutePath() + File.separator + FileUtils.splitFileName(FileUtils.getFileName(context, uri))[0] + "." + extension;
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        final float totalPixels = width * height;
+        final float totalReqPixelsCap = reqWidth * reqHeight * 2;
+
+        while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+            inSampleSize++;
+        }
+
+        return inSampleSize;
+    }
+
+    public static Bitmap getScaledBitmap(Context context, Uri imageUri, float maxWidth, float maxHeight) {
         String filePath = FileUtils.getRealPathFromURI(context, imageUri);
         Bitmap scaledBitmap = null;
 
@@ -42,13 +80,14 @@ public class ImageUtil {
         int actualHeight = options.outHeight;
         int actualWidth = options.outWidth;
 
-        float imgRatio = (float)actualWidth / actualHeight;
+        float imgRatio = (float) actualWidth / actualHeight;
         float maxRatio = maxWidth / maxHeight;
 
         //width and height values are set maintaining the aspect ratio of the image
         if (actualHeight > maxHeight || actualWidth > maxWidth) {
             if (imgRatio < maxRatio) {
-                imgRatio = maxHeight / actualHeight; actualWidth = (int) (imgRatio * actualWidth);
+                imgRatio = maxHeight / actualHeight;
+                actualWidth = (int) (imgRatio * actualWidth);
                 actualHeight = (int) maxHeight;
             } else if (imgRatio > maxRatio) {
                 imgRatio = maxWidth / actualWidth;
@@ -109,8 +148,8 @@ public class ImageUtil {
                 matrix.postRotate(270);
             }
             scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-                                               scaledBitmap.getWidth(), scaledBitmap.getHeight(),
-                                               matrix, true);
+                    scaledBitmap.getWidth(), scaledBitmap.getHeight(),
+                    matrix, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,7 +157,7 @@ public class ImageUtil {
         return scaledBitmap;
     }
 
-    static File compressImage(Context context, Uri imageUri, float maxWidth, float maxHeight, Bitmap.CompressFormat compressFormat, int quality, String parentPath) {
+    public static File compressImage(Context context, Uri imageUri, float maxWidth, float maxHeight, Bitmap.CompressFormat compressFormat, int quality, String parentPath) {
         FileOutputStream out = null;
         String filename = generateFilePath(context, parentPath, imageUri, compressFormat.name().toLowerCase());
         try {
@@ -141,32 +180,88 @@ public class ImageUtil {
         return new File(filename);
     }
 
-    private static String generateFilePath(Context context, String parentPath, Uri uri, String extension) {
-        File file = new File(parentPath);
-        if (!file.exists()) {
-            file.mkdirs();
+    /**
+     * <pre>
+     * parse image ratio from imageurl with regex as follows:
+     * (\d+)-(\d+)(_?q\d+)?(\.[jpg|png|gif])
+     * (\d+)x(\d+)(_?q\d+)?(\.[jpg|png|gif])
+     * samples urls:
+     * http://img.alicdn.com/tps/i1/TB1x623LVXXXXXZXFXXzo_ZPXXX-372-441.png --> return 372/441
+     * http://img.alicdn.com/tps/i1/TB1P9AdLVXXXXa_XXXXzo_ZPXXX-372-441.png --> return 372/441
+     * http://img.alicdn.com/tps/i1/TB1NZxRLFXXXXbwXFXXzo_ZPXXX-372-441.png --> return 372/441
+     * http://img07.taobaocdn.com/tfscom/T10DjXXn4oXXbSV1s__105829.jpg_100x100.jpg --> return 100/100
+     * http://img07.taobaocdn.com/tfscom/T10DjXXn4oXXbSV1s__105829.jpg_100x100q90.jpg --> return 100/100
+     * http://img07.taobaocdn.com/tfscom/T10DjXXn4oXXbSV1s__105829.jpg_100x100q90.jpg_.webp --> return 100/100
+     * http://img03.taobaocdn.com/tps/i3/T1JYROXuRhXXajR_DD-1680-446.jpg_q50.jpg --> return 1680/446
+     * </pre>
+     *
+     * @param imageUrl image url
+     * @return ratio of with to height parsed from url
+     */
+    public static Pair<Integer, Integer> getImageSize(String imageUrl) {
+        if (TextUtils.isEmpty(imageUrl)) {
+            return null;
         }
-        return file.getAbsolutePath() + File.separator + FileUtils.splitFileName(FileUtils.getFileName(context, uri))[0] + "." + extension;
+        if (imageSizeMap.get(imageUrl) != null) {
+            return imageSizeMap.get(imageUrl);
+        }
+        try {
+            Matcher matcher = ConstUtils.REGEX_IMG_1.matcher(imageUrl);
+            String widthStr;
+            String heightStr;
+            if (matcher.find()) {
+                if (matcher.groupCount() >= 2) {
+                    widthStr = matcher.group(1);
+                    heightStr = matcher.group(2);
+                    if (widthStr.length() < 5 && heightStr.length() < 5) {
+                        int urlWidth = Integer.parseInt(widthStr);
+                        int urlHeight = Integer.parseInt(heightStr);
+                        Pair<Integer, Integer> result = new Pair<>(urlWidth, urlHeight);
+                        imageSizeMap.put(imageUrl, result);
+                        return result;
+                    }
+                }
+            } else {
+                matcher = ConstUtils.REGEX_IMG_2.matcher(imageUrl);
+                if (matcher.find()) {
+                    if (matcher.groupCount() >= 2) {
+                        widthStr = matcher.group(1);
+                        heightStr = matcher.group(2);
+                        if (widthStr.length() < 5 && heightStr.length() < 5) {
+                            int urlWidth = Integer.parseInt(widthStr);
+                            int urlHeight = Integer.parseInt(heightStr);
+                            Pair<Integer, Integer> result = new Pair<>(urlWidth, urlHeight);
+                            imageSizeMap.put(imageUrl, result);
+                            return result;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+    /**
+     * create a custom ImageView instance
+     *
+     * @param context activity context
+     * @return an instance
+     */
+    public static ImageView createImageInstance(Context context, Constructor imageViewConstructor) {
+        if (imageViewConstructor != null) {
+            try {
+                return (ImageView) imageViewConstructor.newInstance(context);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
-
-        final float totalPixels = width * height;
-        final float totalReqPixelsCap = reqWidth * reqHeight * 2;
-
-        while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
-            inSampleSize++;
-        }
-
-        return inSampleSize;
+        return null;
     }
 }

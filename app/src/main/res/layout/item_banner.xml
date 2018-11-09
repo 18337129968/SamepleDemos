@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   style="@style/layout_match_wrap"
+    android:orientation="vertical">
+    <com.hfxief.view.banner.BannerView
+        android:id="@+id/bnv"
+        android:layout_width="match_parent"
+        android:layerType="software"
+        android:layout_height="100dp"/>
+</LinearLayout>

@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tittle_bar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/layout_match_wrap"
     android:background="@color/colorPrimary"
     android:orientation="vertical">
 
@@ -14,8 +13,7 @@
 
         <LinearLayout
             android:id="@+id/ll_tltle_left"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/layout_wrap_match"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:gravity="center_vertical"
@@ -41,8 +39,7 @@
 
         <TextView
             android:id="@+id/tittle_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/layout_wrap"
             android:layout_centerInParent="true"
             android:ellipsize="end"
             android:gravity="center"
@@ -79,36 +76,31 @@
 
         <ImageView
             android:id="@+id/tittle_img_drawer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/layout_wrap"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
             android:paddingBottom="@dimen/margin_20px"
             android:paddingRight="@dimen/margin_20px"
             android:paddingTop="10dp"
-            android:scaleType="centerInside"
-            />
+            android:scaleType="centerInside" />
 
         <TextView
             android:id="@+id/tittle_login_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/layout_wrap"
             android:layout_centerInParent="true"
             android:layout_marginRight="10px"
             android:layout_toLeftOf="@+id/tittle_img_drawer"
             android:gravity="center"
+            android:text=""
             android:textColor="@color/title_color"
-            android:textSize="@dimen/textsize_30px"
-            android:text=""/>
+            android:textSize="@dimen/textsize_30px" />
 
         <ImageView
             android:id="@+id/tittle_img_find"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/layout_wrap"
             android:layout_centerInParent="true"
             android:layout_marginRight="@dimen/margin_20px"
             android:layout_toLeftOf="@+id/tittle_login_text"
-            android:scaleType="centerInside"
-           />
+            android:scaleType="centerInside" />
     </RelativeLayout>
 </LinearLayout>

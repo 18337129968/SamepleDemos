@@ -1,7 +1,6 @@
 package com.hfxief.adapter.recyclerview.base;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 
 import com.hfxief.adapter.recyclerview.base.baseitem.ItemViewDelegate;
 import com.hfxief.adapter.recyclerview.base.baseitem.ViewHolder;
@@ -18,19 +17,20 @@ public abstract class CommonAdapter<T> extends MultiItemTypeAdapter<T> {
     protected Context mContext;
     protected int mLayoutId;
     protected List<T> mDatas;
-    protected LayoutInflater mInflater;
 
     public CommonAdapter(final Context context, final int layoutId, List<T> datas) {
         super(context, datas);
         mContext = context;
-        mInflater = LayoutInflater.from(context);
         mLayoutId = layoutId;
         mDatas = datas;
+        init();
+    }
 
+    private void init() {
         addItemViewDelegate(new ItemViewDelegate<T>() {
             @Override
             public int getItemViewLayoutId() {
-                return layoutId;
+                return mLayoutId;
             }
 
             @Override
@@ -42,9 +42,15 @@ public abstract class CommonAdapter<T> extends MultiItemTypeAdapter<T> {
             public void convert(ViewHolder holder, T item, int position) {
                 CommonAdapter.this.convert(holder, item, position);
             }
+
+            @Override
+            public void recycled(ViewHolder holder, T t) {
+                CommonAdapter.this.recycled(holder);
+            }
         });
     }
 
-    protected abstract void convert(ViewHolder holder, T t, int position);
+    protected abstract void recycled(ViewHolder holder);
 
+    protected abstract void convert(ViewHolder holder, T t, int position);
 }

@@ -32,7 +32,7 @@ public abstract class MultiItemTypeAdapter<T> extends RecyclerView.Adapter<ViewH
         mItemViewDelegateManager = new ItemViewDelegateManager();
     }
 
-    public void setLoadMoreEnable(boolean enable,View mFooterView) {
+    public void setLoadMoreEnable(boolean enable, View mFooterView) {
         loadingMoreEnabled = enable;
         this.mFooterView = mFooterView;
     }
@@ -49,11 +49,15 @@ public abstract class MultiItemTypeAdapter<T> extends RecyclerView.Adapter<ViewH
         }
     }
 
+    public int getItemType(T item, int position) {
+        return mItemViewDelegateManager.getItemViewType(item, position);
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (isFooter(position)) return TYPE_FOOTER;
         if (!useItemViewDelegateManager()) return super.getItemViewType(position);
-        return mItemViewDelegateManager.getItemViewType(mDatas.get(position), position);
+        return getItemType(mDatas.get(position), position);
     }
 
 
@@ -63,8 +67,9 @@ public abstract class MultiItemTypeAdapter<T> extends RecyclerView.Adapter<ViewH
             return new ViewHolder(mContext, mFooterView);
         }
         ItemViewDelegate itemViewDelegate = mItemViewDelegateManager.getItemViewDelegate(viewType);
-        int layoutId = itemViewDelegate.getItemViewLayoutId();
-        ViewHolder holder = ViewHolder.createViewHolder(mContext, parent, layoutId);
+        int layoutId = itemViewDelegate == null ? 0 : itemViewDelegate.getItemViewLayoutId();
+        ViewHolder holder;
+        holder = ViewHolder.createViewHolder(mContext, parent, layoutId);
         onViewHolderCreated(holder, holder.getConvertView());
         setListener(parent, holder, viewType);
         return holder;
@@ -82,10 +87,13 @@ public abstract class MultiItemTypeAdapter<T> extends RecyclerView.Adapter<ViewH
         mItemViewDelegateManager.convert(holder, t, holder.getAdapterPosition());
     }
 
+    private void recycled(ViewHolder holder, T t) {
+        mItemViewDelegateManager.recycled(holder, t);
+    }
+
     protected boolean isEnabled(int viewType) {
         return true;
     }
-
 
     protected void setListener(final ViewGroup parent, final ViewHolder viewHolder, int viewType) {
         if (!isEnabled(viewType)) return;
@@ -115,6 +123,12 @@ public abstract class MultiItemTypeAdapter<T> extends RecyclerView.Adapter<ViewH
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (position < mDatas.size())
             convert(holder, mDatas.get(position));
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+        recycled(holder, mDatas.get(holder.getAdapterPosition()));
     }
 
     @Override

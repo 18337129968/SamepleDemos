@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SamepleDemos</string>
     <string name="title_back">返回</string>
-
+    <string name="no_net_work">网络连接不可以，请检查网络设置!</string>
 </resources>

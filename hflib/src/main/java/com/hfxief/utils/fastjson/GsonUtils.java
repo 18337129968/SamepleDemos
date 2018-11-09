@@ -3,11 +3,11 @@ package com.hfxief.utils.fastjson;
 import com.alibaba.fastjson.JSON;
 
 /**
- * @Author mxl
- * @Date on 2017/5/29
- * @Description:
+ * @title GsonUtils
+ * @description 描述：
+ * @date 2018/6/26
+ * @auther xie
  */
-
 public class GsonUtils {
 
     public static String toJSONString(Object obj) {

@@ -10,5 +10,5 @@ package com.hfxief.event;
  */
 
 
-public interface IEvent {
+public class IEvent {
 }

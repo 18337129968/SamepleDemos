@@ -4,12 +4,10 @@ import android.text.TextUtils;
 import android.webkit.URLUtil;
 
 import com.alibaba.fastjson.JSONException;
-import com.hfxief.R;
 import com.hfxief.app.BaseApplication;
 import com.hfxief.event.FEvent;
 import com.hfxief.event.StopEvent;
 import com.hfxief.utils.BusProvider;
-import com.hfxief.utils.RetrofitUtil;
 import com.hfxief.utils.fastjson.FastJsonConverterFactory;
 import com.orhanobut.logger.Logger;
 
@@ -20,12 +18,18 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.MediaType;
@@ -77,6 +81,33 @@ public class BaseHttp {
     private OkHttpClient cacheClient;
     private OkHttpClient noCacheClient;
 
+    private SSLSocketFactory getSSLSocketFactory() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }};
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+            return sslContext.getSocketFactory();
+        } catch (Exception e) {
+            Logger.e(e.getMessage());
+            return null;
+        }
+    }
+
     protected <T> T createService(Class<T> clazz, Map<String, String> headers, String baseURL, boolean isCach) {
         if (TextUtils.isEmpty(baseURL)) {
             throw new IllegalArgumentException("BaseHttp-->createService >>> baseURL can not be empty");
@@ -117,10 +148,15 @@ public class BaseHttp {
             builder.addInterceptor(logInterceptor);
         }
         if (baseURL.startsWith("https://")) {
-            SSLSocketFactory sslSocketFactory = RetrofitUtil
-                    .getSSLSocketFactory(BaseApplication.getInstance(), new int[]{R.raw.xmarket});
-            builder.sslSocketFactory(sslSocketFactory)
-                    .hostnameVerifier(RetrofitUtil.getHostnameVerifier(new String[]{baseURL}));
+//            SSLSocketFactory sslSocketFactory = RetrofitUtil
+//                    .getSSLSocketFactory(BaseApplication.getInstance(), new int[]{R.raw.xmarket});
+//            builder.sslSocketFactory(sslSocketFactory)
+//                    .hostnameVerifier(RetrofitUtil.getHostnameVerifier(new String[]{baseURL}));
+            SSLSocketFactory ssl = getSSLSocketFactory();
+            if (ssl != null) {
+                builder.sslSocketFactory(ssl);
+                builder.hostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            }
         }
         builder.connectTimeout(HTTP_CONNECTTIME, TimeUnit.SECONDS);
         builder.readTimeout(HTTP_CONNECTTIME, TimeUnit.SECONDS);
@@ -149,8 +185,7 @@ public class BaseHttp {
                 .subscribe(subscriber);
     }
 
-    protected <T> Subscription dispachHttp(Observable<T> observable,
-                                           final HttpRequest<T> httpRequest) {
+    protected <T> Subscription dispachHttp(Observable<T> observable, final HttpRequest<T> httpRequest) {
 
         return httpResult(observable, new Subscriber<T>() {
             @Override
@@ -171,7 +206,7 @@ public class BaseHttp {
                 unsubscribe();
                 ThrowErrorInfo(e);
                 httpRequest.onHttpError();
-                Logger.e("OkHttp--->onError=" + e.getMessage()+"====="+e.getClass().getName());
+                Logger.e("OkHttp--->onError=" + e.getMessage() + "=====" + e.getClass().getName());
             }
 
             @Override

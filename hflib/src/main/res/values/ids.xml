@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="TANGRAM_BANNER_ID" type="id" />
+    <item name="TANGRAM_BANNER_INDICATOR_POS" type="id" />
 </resources>

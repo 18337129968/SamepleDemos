@@ -1,6 +1,6 @@
 package com.hfxief.utils;
 
-import com.squareup.otto.Bus;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * SampleAndroidProject
@@ -12,20 +12,19 @@ import com.squareup.otto.Bus;
  */
 
 public class BusProvider {
-    private static Bus _bus = new Bus();
 
     private BusProvider() {
     }
 
     public static <T> void post (T t) {
-        _bus.post(t);
+        EventBus.getDefault().post(t);
     }
 
     public static void register (Object obj) {
-        _bus.register(obj);
+        EventBus.getDefault().register(obj);
     }
 
     public static void unregister (Object obj) {
-        _bus.unregister(obj);
+        EventBus.getDefault().unregister(obj);
     }
 }

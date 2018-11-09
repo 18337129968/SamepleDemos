@@ -34,10 +34,39 @@ public abstract class BaseActivity extends LibBaseActivity {
     private TextView tittle_text;
     private LinearLayout ll_tltle_left, tittle_bar;
     protected StateLayout stateLayout;
+    private View vNetWorkTip;
 
     protected abstract int getContentResource();
 
 
+    private void initRightView() {
+        rightImg = (ImageView) findViewById(R.id.tittle_img_drawer);
+        rightTv = (TextView) findViewById(R.id.tittle_login_text);
+    }
+
+    private void initRigntWithLeftView() {
+        rightImg = (ImageView) findViewById(R.id.tittle_img_find);
+        rightTv = (TextView) findViewById(R.id.tittle_login_text);
+    }
+
+    private void initRight2View() {
+        imgFind = (ImageView) findViewById(R.id.tittle_img_drawer);
+        rightImg = (ImageView) findViewById(R.id.tittle_img_find);
+    }
+
+    /**
+     * @return void
+     * @see: headerInit
+     * @Description: (初始化title)
+     * @params []
+     * @since 2.0
+     */
+    private void headerInit() {
+        if (stub == null) {
+            stub = ((ViewStub) findViewById(R.id.vs_title));
+            stub.inflate();
+        }
+    }
 
     @Override
     protected void beforWork() {
@@ -60,6 +89,7 @@ public abstract class BaseActivity extends LibBaseActivity {
         content.addView(LayoutInflater.from(this).inflate(getContentResource(), null));
         stateLayout = (StateLayout) findViewById(R.id.stateLayout);
         stateLayout.setErrorAndEmptyAction(v -> onRetryListener());
+        vNetWorkTip = getLayoutInflater().inflate(R.layout.layout_main_network_tip, null);
     }
 
     protected void setTittleText(int resId) {
@@ -101,20 +131,6 @@ public abstract class BaseActivity extends LibBaseActivity {
             tittle_bar = (LinearLayout) findViewById(R.id.tittle_bar);
         }
         return tittle_bar;
-    }
-
-    /**
-     * @return void
-     * @see: headerInit
-     * @Description: (初始化title)
-     * @params []
-     * @since 2.0
-     */
-    private void headerInit() {
-        if (stub == null) {
-            stub = ((ViewStub) findViewById(R.id.vs_title));
-            stub.inflate();
-        }
     }
 
     /**
@@ -235,21 +251,6 @@ public abstract class BaseActivity extends LibBaseActivity {
         imgFind.setOnClickListener(onClickListener);
     }
 
-    private void initRightView() {
-        rightImg = (ImageView) findViewById(R.id.tittle_img_drawer);
-        rightTv = (TextView) findViewById(R.id.tittle_login_text);
-    }
-
-    private void initRigntWithLeftView() {
-        rightImg = (ImageView) findViewById(R.id.tittle_img_find);
-        rightTv = (TextView) findViewById(R.id.tittle_login_text);
-    }
-
-    private void initRight2View() {
-        imgFind = (ImageView) findViewById(R.id.tittle_img_drawer);
-        rightImg = (ImageView) findViewById(R.id.tittle_img_find);
-    }
-
     /**
      * @return void
      * @see: setRight2Img
@@ -349,11 +350,11 @@ public abstract class BaseActivity extends LibBaseActivity {
     }
 
     /**
+     * @param showDialog   是否显示dialog
+     * @param subscription 网络请求接口
      * @return void
      * @see: htttpRequest
      * @Description: (可设置dialog开关网络请求)
-     * @param showDialog 是否显示dialog
-     * @param subscription 网络请求接口
      * @since 2.0
      */
     public void htttpRequest(boolean showDialog, Subscription subscription) {
@@ -361,7 +362,6 @@ public abstract class BaseActivity extends LibBaseActivity {
             showProgressDialog();
         if (subscription != null) {
             subscriptions.add(subscription);
-
         }
     }
 
@@ -393,4 +393,25 @@ public abstract class BaseActivity extends LibBaseActivity {
     public void permissionSuccess(int requestCode) {
 
     }
+
+    @Override
+    protected void stopWork() {
+        if (vNetWorkTip != null && vNetWorkTip.getParent() != null) {
+            content.removeView(vNetWorkTip);
+        }
+    }
+
+    @Override
+    protected void checkNetWork(boolean isConnected) {
+        if (isConnected) {
+            if (vNetWorkTip != null && vNetWorkTip.getParent() != null) {
+                content.removeView(vNetWorkTip);
+            }
+        } else {
+            if (vNetWorkTip.getParent() == null) {
+                content.addView(vNetWorkTip);
+            }
+        }
+    }
+
 }

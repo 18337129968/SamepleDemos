@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/layout_match"
+    android:orientation="horizontal">
+
+    <com.hfxief.view.GridViewLayout
+        android:id="@+id/house_info_assort"
+        style="@style/layout_match"
+        app:column="5" />
+</LinearLayout>

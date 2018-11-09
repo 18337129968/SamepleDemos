@@ -1,5 +1,7 @@
 package com.example.administrator.samepledemos.local;
 
+import android.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,20 +16,29 @@ import java.util.List;
 
 
 public class ClassEnum {
-    private static List<Class> classes = new ArrayList<>();
-    private static List<String> names = new ArrayList<>();
-
-    public static Class<?> valueOf(int value) {
-        Class c = classes.get(value);
-        return c;
-    }
+    private static List<Pair<String, String>> names = new ArrayList<>();
 
     public static void addClass(Class clas) {
-        classes.add(clas);
-        names.add(clas.getSimpleName());
+        Pair<String,String> pair = new Pair<>(clas.getSimpleName(),clas.getName());
+        names.add(pair);
     }
 
     public static List<String> getNames() {
-        return names;
+        List<String> list = new ArrayList<>(names.size());
+        for (Pair<String,String> pair : names) {
+            list.add(pair.first);
+        }
+        return list;
+    }
+
+    public static String getName(int position) {
+        if (position < names.size())
+            return names.get(position).second;
+        else
+            return null;
+    }
+
+    public static void recycleDatas() {
+        names.clear();
     }
 }

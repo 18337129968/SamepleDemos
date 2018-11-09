@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.administrator.samepledemos.R;
 import com.hfxief.adapter.gridview.base.BaseGridViewAdapter;
+import com.hfxief.app.BaseManagers;
 
 import java.util.List;
 
@@ -18,29 +19,40 @@ import butterknife.ButterKnife;
  * Created by xie on 2018/5/24.
  */
 
-public class GrideViewAdapter extends BaseGridViewAdapter {
-    @BindView(R.id.img_machine_icon)
-    ImageView imgMachineIcon;
-    @BindView(R.id.tv_machine_name)
-    TextView tvMachineName;
-    private List<String > data;
+public class GrideViewAdapter extends BaseGridViewAdapter<String> {
+    private ViewHolder holder;
 
     public GrideViewAdapter(Context context, List<String> data) {
-        super(context);
-        this.data = data;
+        super(context, data);
     }
 
     @Override
-    public int getCount() {
-        return data.size();
-    }
-
-    @Override
-    public View getView(int position, LayoutInflater layoutInflater) {
-        View view = layoutInflater.inflate(R.layout.item_fx_rent_info_machine, null, false);
-        ButterKnife.bind(this, view);
-        tvMachineName.setText(data.get(position));
+    public View getView(View view, String item, int position, LayoutInflater layoutInflater) {
+        if (view == null) {
+            view = layoutInflater.inflate(R.layout.item_fx_rent_info_machine, null, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
+        }
+        holder.tvMachineName.setText(item);
+        holder.tvMachineName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BaseManagers.getToastor().showSingletonToast("position"+position);
+            }
+        });
         return view;
     }
 
+    class ViewHolder {
+        @BindView(R.id.img_machine_icon)
+        ImageView imgMachineIcon;
+        @BindView(R.id.tv_machine_name)
+        TextView tvMachineName;
+
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 }

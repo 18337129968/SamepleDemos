@@ -10,7 +10,7 @@ package com.hfxief.event;
  */
 
 
-public class FEvent implements IEvent{
+public class FEvent extends IEvent{
     public String error;
 
     public FEvent(String error) {

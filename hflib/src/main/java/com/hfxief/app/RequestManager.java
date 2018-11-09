@@ -3,7 +3,9 @@ package com.hfxief.app;
 import com.hfxief.event.FEvent;
 import com.hfxief.event.StopEvent;
 import com.hfxief.utils.BusProvider;
-import com.squareup.otto.Subscribe;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class RequestManager {
         return requestManager;
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void error(FEvent e) {
         for (OnRequestListener listener : listeners) {
             listener.onError(e);
@@ -38,7 +40,7 @@ public class RequestManager {
         BaseManagers.getToastor().showSingletonToast(e.error);
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void stop(StopEvent e) {
         for (OnRequestListener listener : listeners) {
             listener.onStop(e);

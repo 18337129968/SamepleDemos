@@ -1,13 +1,7 @@
 package com.hfxief.utils;
 
-/**
- * <pre>
- *     author: Blankj
- *     blog  : http://blankj.com
- *     time  : 2016/8/11
- *     desc  : 常量相关工具类
- * </pre>
- */
+import java.util.regex.Pattern;
+
 public class ConstUtils {
 
     private ConstUtils() {
@@ -167,4 +161,14 @@ public class ConstUtils {
     public static final String REGEX_NEGATIVE_FLOAT = "^-[1-9]\\d*\\.\\d*|-0\\.\\d*[1-9]\\d*$";
 
     /************** If u want more please visit http://toutiao.com/i6231678548520731137/ **************/
+
+    /**
+     * 正则：例如淘宝图片URL：https://img.alicdn.com/tps/TB1XRNFNXXXXXXKXXXXXXXXXXXX-32-4.png携带数字组合
+     * group(1):(\d+)   32
+     * group(2):(\d+)   4
+     * group(3):(_?q\d+)    null
+     * group(4):(\.(jpg|png|gif))") .png
+     * */
+    public static final Pattern REGEX_IMG_1 = Pattern.compile("(\\d+)x(\\d+)(_?q\\d+)?(\\.(jpg|png|gif))");
+    public static final Pattern REGEX_IMG_2 = Pattern.compile("(\\d+)-(\\d+)(_?q\\d+)?(\\.(jpg|png|gif))");
 }

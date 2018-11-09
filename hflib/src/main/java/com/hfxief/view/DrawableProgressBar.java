@@ -1,4 +1,4 @@
-package com.hfxief.utils.fresco;
+package com.hfxief.view;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

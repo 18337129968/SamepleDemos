@@ -38,12 +38,6 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         mViews = new SparseArray<View>();
     }
 
-
-    public static ViewHolder createViewHolder(Context context, View itemView) {
-        ViewHolder holder = new ViewHolder(context, itemView);
-        return holder;
-    }
-
     public static ViewHolder createViewHolder(Context context,
                                               ViewGroup parent, int layoutId) {
         View itemView = LayoutInflater.from(context).inflate(layoutId, parent,

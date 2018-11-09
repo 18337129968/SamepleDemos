@@ -84,7 +84,14 @@ public class ItemViewDelegateManager<T> {
                 "No ItemViewDelegateManager added that matches position=" + position + " in data source");
     }
 
+    public void recycled(ViewHolder holder, T t) {
+        int delegatesCount = delegates.size();
+        for (int i = 0; i < delegatesCount; i++) {
+            ItemViewDelegate<T> delegate = delegates.valueAt(i);
+            delegate.recycled(holder,t);
+        }
 
+    }
     public ItemViewDelegate getItemViewDelegate(int viewType) {
         return delegates.get(viewType);
     }

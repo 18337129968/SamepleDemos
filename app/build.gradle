@@ -15,6 +15,9 @@ android {
 //        }
     }
     buildTypes {
+        debug{
+
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -36,8 +39,6 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${ESPRESSO_CORE}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${BUTTERKNIFE}"
     annotationProcessor "com.google.dagger:dagger-compiler:${DAGGER}"
-    compile project(':hflib')
-    compile 'com.lufficc:stateLayout:0.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
+    implementation project(':hflib')
+    implementation "com.lufficc:stateLayout:${STATELAYOUT}"
 }

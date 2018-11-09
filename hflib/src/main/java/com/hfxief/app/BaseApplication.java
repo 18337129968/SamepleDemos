@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hfxief.BuildConfig;
 import com.hfxief.utils.fresco.ImagePipelineConfigFactory;
 import com.orhanobut.logger.Logger;
 import com.zhy.autolayout.config.AutoLayoutConifg;
@@ -18,18 +19,37 @@ import com.zhy.autolayout.config.AutoLayoutConifg;
  * @Description:
  */
 
-public abstract class BaseApplication extends Application {
+public abstract class BaseApplication extends Application implements Thread.UncaughtExceptionHandler {
     private static Application baseApplication;
+    private Thread.UncaughtExceptionHandler mDefaultHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
+//        mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
         initInstance();
         initAutoLayout();
         initLogger();
         initStetho();
         initFresco();
         initBaseManagers();
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        if (BuildConfig.CATCH_EX) {
+            Logger.e("=========================");
+            e.printStackTrace();
+            Logger.e("=========================");
+            try {
+                Thread.sleep(1000000);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+//            mDefaultHandler.uncaughtException(t, e);
+
+        }
     }
 
     protected abstract Application getBaseApplication();

@@ -10,7 +10,7 @@ package com.hfxief.event;
  */
 
 
-public class StopEvent implements IEvent{
+public class StopEvent extends IEvent{
     public StopEvent() {
     }
 }

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.administrator.samepledemos">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".app.APPApplication"
         android:allowBackup="true"
@@ -10,15 +12,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--检测网络是否有效广播-->
+        <receiver android:name="com.hfxief.receiver.NetworkCheckBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.NET.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.Net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
         <activity android:name=".ui.activity.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.HOME"/>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.camera.CameraActivity" />
-        <activity android:name=".ui.activity.gridview.GridViewActivity"></activity>
+        <activity android:name=".ui.activity.gridview.GridViewActivity" />
+        <activity android:name=".ui.activity.banner.BannerActivity" />
+        <activity android:name=".ui.activity.banner.BannerPoolActivity"></activity>
     </application>
 
 </manifest>

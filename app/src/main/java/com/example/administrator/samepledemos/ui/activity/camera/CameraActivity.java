@@ -36,18 +36,17 @@ public class CameraActivity extends BaseActivity {
 
     @Override
     protected void startWork(Bundle savedInstanceState) {
-        setTittleText("Camera");
+        setTittleText(this.getClass().getSimpleName());
         anim = getAnimation();
         reAnima = reAnimation();
-        RxView.clicks(imgArrow).map(aVoid -> isArrow= !isArrow).subscribe(aBoolean -> {
-            toastor.showLongToast("aBoolean="+aBoolean);
+        RxView.clicks(imgArrow).map(aVoid -> isArrow = !isArrow).subscribe(aBoolean -> {
+            toastor.showLongToast("aBoolean=" + aBoolean);
             if (aBoolean) {
                 imgArrow.startAnimation(anim);
             } else {
                 imgArrow.startAnimation(reAnima);
             }
         });
-
     }
 
     @Override

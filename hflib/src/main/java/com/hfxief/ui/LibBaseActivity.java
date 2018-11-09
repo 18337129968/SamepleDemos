@@ -8,27 +8,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.WindowManager;
 
-import com.hfxief.BuildConfig;
 import com.hfxief.R;
 import com.hfxief.app.BaseManagers;
 import com.hfxief.app.RequestManager;
 import com.hfxief.event.FEvent;
+import com.hfxief.event.NetEvent;
 import com.hfxief.event.StopEvent;
 import com.hfxief.utils.BusProvider;
 import com.hfxief.utils.Toastor;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 
-public abstract class LibBaseActivity extends MPermissionActivity implements RequestManager.OnRequestListener, Thread.UncaughtExceptionHandler {
+public abstract class LibBaseActivity extends MPermissionActivity implements RequestManager.OnRequestListener {
+    private boolean mCheckNetWork;
     private ProgressDialog progressDialog;
 
     public Toastor toastor;
 
     protected FragmentManager fragmentManager;
-    protected Thread.UncaughtExceptionHandler mDefaultHandler;
+
     protected CompositeSubscription subscriptions = new CompositeSubscription();
 
     protected abstract int getContentView();
@@ -41,10 +45,7 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
 
     protected abstract void beforWork();
 
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        if (BuildConfig.CATCH_EX) mDefaultHandler.uncaughtException(t, e);
-    }
+    protected abstract void checkNetWork(boolean isConnected);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +53,6 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
         fragmentManager = getSupportFragmentManager();
         BaseManagers.getActivitiesManager().addActivity(this);
         super.onCreate(savedInstanceState);
-        mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
         setContentView(getContentView());
         setContentResource();
         ButterKnife.bind(this);
@@ -141,8 +140,7 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
         List<Fragment> fragments = fragmentManager.getFragments();
         if (fragments != null && fragments.size() != 0) {
             for (Fragment fragment : fragments) {
-                if (fragment != null)
-                    fragment.onDestroy();
+                if (fragment != null) fragment.onDestroy();
                 fragment = null;
             }
         }
@@ -181,6 +179,17 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
     @Override
     public void onError(FEvent e) {
         dissmissProgressDialog();
+    }
+
+    public void setCheckNetWork(boolean mCheckNetWork) {
+        this.mCheckNetWork = mCheckNetWork;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNetWorkCheck(NetEvent event) {
+        if (mCheckNetWork) {
+            checkNetWork(event.isConnected);
+        }
     }
 
 }
