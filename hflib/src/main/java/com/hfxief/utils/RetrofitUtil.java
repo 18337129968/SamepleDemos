@@ -67,9 +67,10 @@ public class RetrofitUtil {
             for (String host : hostUrls) {
                 if (host.equalsIgnoreCase(hostname)) {
                     ret = true;
-                } else if (getHostHome(host).equalsIgnoreCase(hostname)) {
-                    ret = true;
                 }
+//                else if (getHostHome(host).equalsIgnoreCase(hostname)) {
+//                    ret = true;
+//                }
             }
             return ret;
         };
