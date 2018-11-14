@@ -3,7 +3,6 @@ package com.hfxief.ui;
 import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.WindowManager;
@@ -92,11 +91,6 @@ public abstract class LibBaseActivity extends MPermissionActivity implements Req
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-    }
-
-    @Override
-    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
     }
 
     @Override
