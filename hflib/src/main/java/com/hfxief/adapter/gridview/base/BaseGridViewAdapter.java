@@ -4,23 +4,27 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.hfxief.view.GridViewLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Subscription;
 
 /**
  * 自定义GridView
  * Created by xie on 2018/5/24.
  */
 
-public abstract class BaseGridViewAdapter<T>{
+public abstract class BaseGridViewAdapter<T> {
     private Context context;
+    private Observable<Void> observable;
+    private Subscription subscription;
     private LayoutInflater layoutInflater;
-    private Observable observable;
-    private Subscriber<? super Void> mSubscriber;
-    private List<T> mList = new ArrayList<>();
+    private GridViewLayout.GridViewAction action;
+    protected List<T> mList = new ArrayList<>();
+    protected OnGridViewItemClick onGridViewItemClick;
 
     public int getCount() {
         return mList.size();
@@ -30,17 +34,17 @@ public abstract class BaseGridViewAdapter<T>{
 
     public BaseGridViewAdapter(Context context) {
         this.context = context;
-        observable = Observable.create(new GridViewSubscribe());
+        observable = Observable.empty();
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(context);
         }
     }
 
-   public BaseGridViewAdapter(Context context, List<T> mList) {
+    public BaseGridViewAdapter(Context context, List<T> mList) {
         if (mList == null) throw new NullPointerException("mList is null , please check");
         this.context = context;
         this.mList.addAll(mList);
-        observable = Observable.create(new GridViewSubscribe());
+        observable = Observable.empty();
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(context);
         }
@@ -53,9 +57,8 @@ public abstract class BaseGridViewAdapter<T>{
         notifyAdapter();
     }
 
-    public View getConvertView(View view,final int position) {
-        View mView = getView(view, mList.get(position), position, layoutInflater);
-        return mView;
+    public View getConvertView(View view, int position) {
+        return getView(view, mList.get(position), position, layoutInflater);
     }
 
     public Context getContext() {
@@ -67,20 +70,22 @@ public abstract class BaseGridViewAdapter<T>{
     }
 
     public void notifyAdapter() {
-        if (mSubscriber != null && !mSubscriber.isUnsubscribed()) {
-            mSubscriber.onNext(null);
-        }
+        if (action != null) subscription = observable.subscribe(action);
     }
 
-    public Observable getObservable() {
-        return observable;
+    public void setAction(GridViewLayout.GridViewAction action) {
+        this.action = action;
     }
 
-    class GridViewSubscribe implements Observable.OnSubscribe<Void> {
-        @Override
-        public void call(Subscriber<? super Void> subscriber) {
-            mSubscriber = subscriber;
-        }
+    public Subscription getSubscription() {
+        return subscription;
     }
 
+    public void setOnGridViewItemClick(OnGridViewItemClick onGridViewItemClick) {
+        this.onGridViewItemClick = onGridViewItemClick;
+    }
+
+    public interface OnGridViewItemClick {
+        void onItemCLick(int position);
+    }
 }

@@ -12,7 +12,8 @@ import com.hfxief.adapter.gridview.base.BaseGridViewAdapter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import rx.functions.Action1;
+import rx.Observer;
+import rx.Subscription;
 
 /**
  * Created by xie on 2018/5/24.
@@ -55,7 +56,6 @@ public class GridViewLayout extends LinearLayout {
                     attrs, R.styleable.GridViewLayout, defStyleAttr, 0);
             columns = typedArray.getInteger(R.styleable.GridViewLayout_column, 1);
         }
-
     }
 
     @Override
@@ -77,7 +77,7 @@ public class GridViewLayout extends LinearLayout {
                 j = i;
                 mLeft = getPaddingLeft();
                 mRight = mLeft + columnWidth;
-                mTop += child.getMeasuredHeight();
+                mTop = mBottom;
             }
             mBottom = mTop + child.getMeasuredHeight();
             map.put(child, new ChildDimen(mLeft, mTop, mRight, mBottom));
@@ -106,9 +106,14 @@ public class GridViewLayout extends LinearLayout {
     }
 
     public void setAdapter(BaseGridViewAdapter adapter) {
+        if (adapter == null) throw new NullPointerException("BaseGridViewAdapter is null , please check");
         this.adapter = adapter;
-        adapter.getObservable().subscribe(new GridViewAction());
-        addView(adapter);
+        adapter.setAction(new GridViewAction());
+        adapter.notifyAdapter();
+    }
+
+    public BaseGridViewAdapter getAdapter() {
+        return adapter;
     }
 
     class ChildDimen {
@@ -122,13 +127,32 @@ public class GridViewLayout extends LinearLayout {
         }
     }
 
-    class GridViewAction implements Action1<Void> {
+    @Override
+    protected void onDetachedFromWindow() {
+        if (adapter != null) {
+            Subscription subscription = adapter.getSubscription();
+            if (subscription != null && !subscription.isUnsubscribed()) subscription.unsubscribe();
+        }
+        super.onDetachedFromWindow();
+    }
+
+    public class GridViewAction implements Observer<Void> {
 
         @Override
-        public void call(Void aVoid) {
+        public void onCompleted() {
             if (adapter != null) {
                 addView(adapter);
+                Subscription subscription = adapter.getSubscription();
+                if (subscription != null) subscription.unsubscribe();
             }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+        }
+
+        @Override
+        public void onNext(Void aVoid) {
         }
     }
 
